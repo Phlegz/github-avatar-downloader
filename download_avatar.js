@@ -1,12 +1,13 @@
 'use strict'
 
 const request = require('request');
+const fs = require('fs');
 const GITHUB_USER = "Phlegz";
 const GITHUB_TOKEN = "dba0c4f050a8693a7a027ddfe6fc088aab009ae3";
 
-
-function displayAvatarURL(profile) {
-  console.log('avatar URL: ', profile.avatar_url);
+function downloadImageByURL(url, filePath) {
+  var writerStream = fs.createWriteStream(filePath);
+  request(url).pipe(writerStream);
 }
 
 function processData(err, response, body) {
@@ -16,7 +17,10 @@ function processData(err, response, body) {
   }
   if (!err && response.statusCode == 200) {
     let info = JSON.parse(body);
-    info.forEach(displayAvatarURL);
+    info.forEach((profile) => {
+      let avatarURL = profile.avatar_url;
+      downloadImageByURL(avatarURL, `./avatars/${profile.login}.jpg`);
+    });
   }
 }
 
@@ -31,4 +35,4 @@ function getRepoContributors(repoOwner, repoName, cb) {
   request(options, cb);
 }
 
-getRepoContributors("jquery", "jquery", processData);
+getRepoContributors(process.argv.slice(2)[0],process.argv.slice(2)[1] , processData);

@@ -1,26 +1,34 @@
-var request = require('request');
-var GITHUB_USER = "Phlegz";
-var GITHUB_TOKEN = "dba0c4f050a8693a7a027ddfe6fc088aab009ae3";
+'use strict'
+
+const request = require('request');
+const GITHUB_USER = "Phlegz";
+const GITHUB_TOKEN = "dba0c4f050a8693a7a027ddfe6fc088aab009ae3";
+
+
+function displayAvatarURL(profile) {
+  console.log('avatar URL: ', profile.avatar_url);
+}
+
+function processData(err, response, body) {
+  if (err) {
+    console.log('Error:',err);
+    return;
+  }
+  if (!err && response.statusCode == 200) {
+    let info = JSON.parse(body);
+    info.forEach(displayAvatarURL);
+  }
+}
 
 function getRepoContributors(repoOwner, repoName, cb) {
-  var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
-  console.log(requestURL);
-
-  //HTTP Headers, such as User-Agent, can be set in the options object. Here, we call the github API. This requires a custom User-Agent header as well as https.
-  var options = {
+  const requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
+  const options = {
     url: requestURL,
     headers: {
-      'User-Agent': 'GitHub Avatar Downloader - Student Project'
+      'User-Agent': 'GitHub Avatar Downloader - Student Project'   //HTTP Headers, such as User-Agent, can be set in the options object. Here, we call the github API. This requires a custom User-Agent header as well as https.
     }
   };
   request(options, cb);
 }
 
-function callback(error, response, body) {
-  if (!error && response.statusCode == 200) {
-    var info = JSON.parse(body);
-    console.log(info);
-  }
-}
-
-getRepoContributors("jquery", "jquery", callback);
+getRepoContributors("jquery", "jquery", processData);

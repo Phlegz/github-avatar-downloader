@@ -25,6 +25,7 @@ function processData(err, response, body) {
 }
 
 function getRepoContributors(repoOwner, repoName, cb) {
+  if (repoName && repoOwner) {
   const requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
   const options = {
     url: requestURL,
@@ -33,6 +34,8 @@ function getRepoContributors(repoOwner, repoName, cb) {
     }
   };
   request(options, cb);
+  }
+  else {console.log('Please provide a valid repoName and repoOwner');}
 }
 
 getRepoContributors(process.argv.slice(2)[0],process.argv.slice(2)[1] , processData);
